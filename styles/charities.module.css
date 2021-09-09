@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.filters {
+  width: 20%;
+  margin: 5px;
+}
+
+.results {
+  width: 100%;
+}

@@ -1,0 +1,26 @@
+.header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid grey;
+}
+
+.searchBar {
+  margin: auto;
+}
+
+.searchBar input {
+  width: 30vw;
+}
+
+.linksWrapper {
+  margin: auto 0;
+}
+
+.linksWrapper a {
+  padding: 5px;
+}

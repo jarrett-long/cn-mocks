@@ -1,0 +1,15 @@
+.container {
+  width: 100%;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  height: 100px;
+  margin: auto 0;
+  align-items: center;
+  border: 1px solid grey;
+  border-radius: 3px;
+  padding: 0 5%;
+  margin: 5px 0;
+}
