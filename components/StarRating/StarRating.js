@@ -13,7 +13,7 @@ export default function StarRating (props) {
     return faStarO;
   }
   for (let i = 0; i < 5; i++) {
-    stars.push(<FontAwesomeIcon className={styles.star} icon={getIcon(props.rating, i)} />)
+    stars.push(<FontAwesomeIcon key={i} className={styles.star} icon={getIcon(props.rating, i)} />)
   }
-  return stars;
+  return <div>{stars}</div>;
 }

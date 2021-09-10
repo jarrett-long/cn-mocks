@@ -5,11 +5,11 @@
 .item {
   display: flex;
   justify-content: space-between;
-  height: 100px;
+  min-height: 100px;
   margin: auto 0;
   align-items: center;
   border: 1px solid grey;
   border-radius: 3px;
-  padding: 0 5%;
+  padding: 2% 5%;
   margin: 5px 0;
 }

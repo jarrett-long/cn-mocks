@@ -1,30 +1,72 @@
-
-import { useState } from 'react';
-import CharitiesList from '../components/CharitiesList/CharitiesList';
-import styles from '../styles/charities.module.css';
-import { charities } from '../pages/api/charities';
+import { useEffect, useState } from "react";
+import CharitiesList from "../components/CharitiesList/CharitiesList";
+import styles from "../styles/charities.module.css";
+import { charities, getOrganizations } from "../pages/api/charities";
 
 export default function Charities() {
-  const filterByStar = (event) => {
-    setFilteredList(charities.filter(c => c.stars >= Number.parseInt(event.target.value)));
-  }
-
   const [filteredList, setFilteredList] = useState(charities);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortBy, setSortBy] = useState("stars");
+  const [filterByStars, setFilterByStars] = useState(0);
+  const [filterByFollowers, setFilterByFollowers] = useState(0);
+
+  useEffect(() => {
+    const filtered = charities
+      .filter((c) => c.stars >= filterByStars)
+      .filter((c) => c.followers >= filterByFollowers);
+
+    setFilteredList([
+      ...filtered.sort((current, next) => {
+        if (sortOrder == "asc") {
+          return current[sortBy] - next[sortBy];
+        } else {
+          return next[sortBy] - current[sortBy];
+        }
+      }),
+    ]);
+  }, [sortOrder, sortBy, filterByStars, filterByFollowers]);
+
+  const handleButtonClick = async (e) => {
+    const data = await getOrganizations();
+    console.log('we did it', data);
+  }
 
   return (
     <div className={styles.container}>
       <div className={styles.filters}>
-        <label htmlFor="starsFilter">Filter by rating: </label>
-        <select name="starsFilter" onChange={(e) => filterByStar(e)}>
-          <option value="1">1+</option>
-          <option value="2">2+</option>
-          <option value="3">3+</option>
-          <option value="4">4+</option>
-          <option value="5">5+</option>
-        </select>
+        <div>
+          <label htmlFor="stars">Filter by rating: </label>
+          <select
+            name="stars"
+            onChange={(e) => setFilterByStars(Number.parseInt(e.target.value))}
+          >
+            <option value="1">1+</option>
+            <option value="2">2+</option>
+            <option value="3">3+</option>
+            <option value="4">4+</option>
+            <option value="5">5+</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="followers">Filter by followers: </label>
+          <select
+            name="followers"
+            onChange={(e) => setFilterByFollowers(Number.parseInt(e.target.value))}
+          >
+            <option value="100">100+</option>
+            <option value="1000">1,000+</option>
+            <option value="100000">100,000+</option>
+            <option value="1000000">1,000,000+</option>
+          </select>
+        </div>
+        <div>
+          <button onClick={(e) => handleButtonClick(e)}>Click me</button>
+        </div>
       </div>
       <div className={styles.results}>
-        <select name="Sort By">
+        <label htmlFor="sortBy">Sort By: </label>
+        <select name="sortBy" onChange={(e) => setSortBy(e.target.value)}>
+          <option value="stars">Stars</option>
           <option value="avgMonthly">Average Monthly Contribution</option>
           <option value="followers">Followers</option>
           <option value="growthPct">Program Growth</option>
@@ -32,8 +74,12 @@ export default function Charities() {
           <option value="expenses">Total Expenses</option>
           <option value="consecutive">Consecutive 4-Star Ratings</option>
         </select>
+        <select onChange={(e) => setSortOrder(e.target.value)}>
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
         <CharitiesList charities={filteredList} />
       </div>
     </div>
-  )
+  );
 }
