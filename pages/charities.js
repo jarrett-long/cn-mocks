@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import CharitiesList from "../components/CharitiesList/CharitiesList";
 import styles from "../styles/charities.module.css";
-import { charities, getOrganizations } from "../pages/api/charities";
+import { charities } from "../data/charitiesData";
+import TpLink from "../components/TpLink/TpLink";
 
 export default function Charities() {
   const [filteredList, setFilteredList] = useState(charities);
@@ -25,11 +26,6 @@ export default function Charities() {
       }),
     ]);
   }, [sortOrder, sortBy, filterByStars, filterByFollowers]);
-
-  const handleButtonClick = async (e) => {
-    const data = await getOrganizations();
-    console.log('we did it', data);
-  }
 
   return (
     <div className={styles.container}>
@@ -59,11 +55,9 @@ export default function Charities() {
             <option value="1000000">1,000,000+</option>
           </select>
         </div>
-        <div>
-          <button onClick={(e) => handleButtonClick(e)}>Click me</button>
-        </div>
       </div>
       <div className={styles.results}>
+        <p>This page is an itial proof of concept. An evolution of it with data from charitynavigator.org's api is on <TpLink href="/organizations">the organization page</TpLink></p>
         <label htmlFor="sortBy">Sort By: </label>
         <select name="sortBy" onChange={(e) => setSortBy(e.target.value)}>
           <option value="stars">Stars</option>

@@ -1,24 +1,17 @@
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
+import TpLink from "../TpLink/TpLink";
 import styles from "./header.module.css";
 
 function Header() {
   return (
     <header className={styles.header}>
-      <Link className="link" href="/">
-        <div>
-          <Image src="/logo.png" width={250} height={83} />
-        </div>
-      </Link>
-      <div className={styles.searchBar}>
-        <form>
-          <input type="text" placeholder="Search charities..." />
-        </form>
-      </div>
+      <TpLink className="link" href="/">
+        <Image src="/logo.png" width={200} height={60} />
+      </TpLink>
       <div className={styles.linksWrapper}>
-        <Link href="/charities">Charities</Link>
-        <Link href="/profile">My Profile</Link>
+        <TpLink href="/organizations">Organizations</TpLink>
+        <TpLink href="/profile">My Profile</TpLink>
       </div>
     </header>
   );
