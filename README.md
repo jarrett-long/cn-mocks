@@ -2,6 +2,10 @@
 
 This is a repo for exploring different front-end bits and bops using Next.js for a foundation; and [charitynavigator.org](https://charitynavigator.org) for content inspiration. 
 
+## Getting started
+- Clone the repo
+- Run `npm run dev`
+
 ## Branches
 
 - main
