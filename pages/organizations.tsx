@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import StarRating from "../components/StarRating/StarRating";
 import TpLink from "../components/TpLink/TpLink";
 import { allOrganizations } from "../data/organizationsData";
@@ -9,7 +9,6 @@ import { Organization } from "../types/organizationType";
 import { getPropertyValue } from "../utils/helpers";
 
 export default function Charities() {
-  const [filteredList, setFilteredList] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [sortBy, setSortBy] = useState("charityName");
   const [filterByRating, setFilterByRating] = useState(0);
@@ -17,74 +16,96 @@ export default function Charities() {
   const [filterBySizeMax, setFilterBySizeMax] = useState(10000000000000000);
   const [filterByState, setFilterByState] = useState("");
   const [filterByCategory, setFilterByCategory] = useState(0);
-  const [filterByName, setFilterByName] = useState('');
+  const [filterByName, setFilterByName] = useState("");
   const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
   const [pageNumber, setPageNumber] = useState(0);
 
-  useEffect(() => {
-    let newList = allOrganizations
-      .filter((org) => org.currentRating?.rating >= filterByRating)
-      .filter((org) => org.irsClassification.incomeAmount >= filterBySizeMin)
-      .filter((org) => org.irsClassification.incomeAmount <= filterBySizeMax);
+  let orgList = allOrganizations;
 
-    if (filterByState) {
-      newList = newList.filter(
-        (org) => org.mailingAddress.stateOrProvince == filterByState
-      );
-    }
+  const dependencies: any[] = [filterByRating];
+  orgList = useMemo(
+    () => orgList.filter((org) => org.currentRating?.rating >= filterByRating),
+    [...dependencies]
+  );
 
-    if (filterByCategory > 0) {
-      newList = newList.filter(
-        (org) => org.category.categoryID == filterByCategory
-      );
-    }
+  dependencies.push(filterBySizeMin);
+  orgList = useMemo(
+    () =>
+      orgList.filter(
+        (org) => org.irsClassification.incomeAmount >= filterBySizeMin
+      ),
+    [...dependencies]
+  );
 
-    if (filterByName != '') {
-      newList = newList.filter(
-        (org) => org.charityName?.toLowerCase().startsWith(filterByName.toLowerCase())
-      );
-    }
+  dependencies.push(filterBySizeMax);
+  orgList = useMemo(
+    () =>
+      orgList.filter(
+        (org) => org.irsClassification.incomeAmount <= filterBySizeMax
+      ),
+    [...dependencies]
+  );
 
-    newList = [
-      ...newList.sort((current, next) => {
+  dependencies.push(filterByState);
+  orgList = useMemo(
+    () =>
+      filterByState !== ""
+        ? orgList.filter(
+            (org) => org.mailingAddress.stateOrProvince == filterByState
+          )
+        : orgList,
+    [...dependencies]
+  );
+
+  dependencies.push(filterByCategory);
+  orgList = useMemo(
+    () =>
+      filterByCategory
+        ? orgList.filter((org) => org.category.categoryID == filterByCategory)
+        : orgList,
+    [...dependencies]
+  );
+
+  dependencies.push(filterByName);
+  orgList = useMemo(
+    () =>
+      filterByName != ""
+        ? orgList.filter((org) =>
+            org.charityName
+              ?.toLowerCase()
+              .startsWith(filterByName.toLowerCase())
+          )
+        : orgList,
+    [...dependencies]
+  );
+
+  dependencies.push(sortBy, sortOrder);
+  orgList = useMemo(
+    () =>
+      orgList.sort((current, next) => {
         const currentVal = getPropertyValue(current, sortBy);
         const nextVal = getPropertyValue(next, sortBy);
         const a = sortOrder == "asc" ? currentVal : nextVal;
         const b = sortOrder == "asc" ? nextVal : currentVal;
         return typeof currentVal == "string" ? a.localeCompare(b) : a - b;
       }),
-    ];
+    [...dependencies]
+  );
 
-    setTotalPages(Math.ceil(newList.length / pageSize));
+  const totalPages = Math.ceil(orgList.length / pageSize);
 
-    let skip = pageNumber * pageSize;
+  let skip = pageNumber * pageSize;
 
-    if (skip > newList.length) {
-      skip = 0;
-      setPageNumber(0);
-    }
+  if (skip > orgList.length) {
+    skip = 0;
+    setPageNumber(0);
+  }
 
-    newList = newList.slice(skip, skip + pageSize);
-
-    setFilteredList(newList);
-  }, [
-    sortOrder,
-    sortBy,
-    pageNumber,
-    pageSize,
-    filterByRating,
-    filterBySizeMin,
-    filterBySizeMax,
-    filterByState,
-    filterByCategory,
-    filterByName,
-  ]);
+  orgList = orgList.slice(skip, skip + pageSize);
 
   return (
     <>
       <div className={styles.controlsRow}>
-
         <input
           className={styles.controlSearch}
           type="text"
@@ -153,7 +174,6 @@ export default function Charities() {
             <option value="100">100</option>
           </select>
         </div>
-        
       </div>
       <div className={styles.container}>
         <div className={styles.filters}>
@@ -289,14 +309,16 @@ export default function Charities() {
         </div>
         <div className={styles.results}>
           <div>
-            {filteredList?.map((org: Organization) => (
+            {orgList?.map((org: Organization) => (
               <div key={org.orgID} className={styles.item}>
                 <div className={styles.itemHeading}>
                   <TpLink href={`/charity/${org.orgID}`}>
                     <h3>{org.charityName}</h3>
                   </TpLink>
                   <p>{org.tagLine}</p>
-                  <p><i>{`${org.cause.causeName}`}</i></p>
+                  <p>
+                    <i>{`${org.cause.causeName}`}</i>
+                  </p>
                   <span>
                     <FontAwesomeIcon icon={faMapMarkerAlt} />
                     {` ${org.mailingAddress.city}, ${org.mailingAddress.stateOrProvince}`}
@@ -305,12 +327,15 @@ export default function Charities() {
                 <div className={styles.itemScore}>
                   <StarRating rating={org.currentRating.rating} />
                   <p>Score: {org.currentRating.score} out of 100</p>
-                  <p>Size: ${org.irsClassification.incomeAmount?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? 0}</p>
+                  <p>
+                    Size: $
+                    {org.irsClassification.incomeAmount
+                      ?.toString()
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? 0}
+                  </p>
                 </div>
                 <div className={styles.itemScore}>
-                  <button className={styles.button}>
-                    GIVE
-                  </button>
+                  <button className={styles.button}>GIVE</button>
                 </div>
                 <div className={styles.category}>
                   <img src={org.category.image} width={50} height={50} />
