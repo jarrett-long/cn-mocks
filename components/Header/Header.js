@@ -6,17 +6,25 @@ import TpLink from "../TpLink/TpLink";
 import Link from "next/link";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    position: "sticky",
+    top: 0,
+    zIndex: 100,
+    backgroundColor: theme.palette.common.white,
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2)
+  },
   links: {
-    '& a': {
-      marginLeft: theme.spacing(2)
-    }
+    "& a": {
+      marginLeft: theme.spacing(2),
+    },
   },
 }));
 
 function Header() {
   const classes = useStyles();
   return (
-    <header>
+    <Box component="header" boxShadow={4} className={classes.root}>
       <Grid container justifyContent="space-between" alignItems="center">
         <Grid item>
           <TpLink href="/">
@@ -24,15 +32,11 @@ function Header() {
           </TpLink>
         </Grid>
         <Grid item className={classes.links}>
-          <Link href="/organizations">
-            Organizations
-          </Link>
-          <Link href="/profile">
-            My Profile
-          </Link>
+          <Link href="/organizations">Organizations</Link>
+          <Link href="/profile">My Profile</Link>
         </Grid>
       </Grid>
-    </header>
+    </Box>
   );
 }
 
