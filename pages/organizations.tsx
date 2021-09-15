@@ -80,7 +80,7 @@ export default function Charities() {
     [
       [filterByCategory],
       () =>
-        filterByCategory
+        filterByCategory > 0
           ? orgList.filter((org) => org.category.categoryID == filterByCategory)
           : orgList,
     ],
