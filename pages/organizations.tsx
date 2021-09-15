@@ -1,31 +1,27 @@
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Button,
-  Grid,
+  Button, FormControl, Grid,
   InputLabel,
   MenuItem,
   Select,
-  TextField,
-  FormControl,
-  Typography,
+  TextField, Typography
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { useEffect, useState } from "react";
+import Accordion from "@material-ui/core/Accordion";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import { makeStyles, ThemeProvider } from "@material-ui/core/styles";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import clsx from "clsx";
+import { useState } from "react";
 import StarRating from "../components/StarRating/StarRating";
 import TpLink from "../components/TpLink/TpLink";
 import { allOrganizations } from "../data/organizationsData";
 import styles from "../styles/charities.module.css";
+import { blueBg } from "../theme";
 import { Organization } from "../types/organizationType";
 import { getPropertyValue } from "../utils/helpers";
-import { blueBg } from "../theme";
-import { ThemeProvider } from "@material-ui/core/styles";
-import { withThemeCreator } from "@material-ui/styles";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import clsx from "clsx";
+import useChainMemo from "../utils/useChainMemo";
 
 const useStyles = makeStyles((theme) => ({
   controlRow: {
@@ -56,13 +52,12 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   results: {
-    padding: theme.spacing(2)
-  }
+    padding: theme.spacing(2),
+  },
 }));
 
 export default function Charities() {
   const classes = useStyles();
-  const [filteredList, setFilteredList] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [sortBy, setSortBy] = useState("charityName");
   const [filterByRating, setFilterByRating] = useState(0);
@@ -72,67 +67,80 @@ export default function Charities() {
   const [filterByCategory, setFilterByCategory] = useState(0);
   const [filterByName, setFilterByName] = useState("");
   const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
   const [pageNumber, setPageNumber] = useState(0);
 
-  useEffect(() => {
-    let newList = allOrganizations
-      .filter((org) => org.currentRating?.rating >= filterByRating)
-      .filter((org) => org.irsClassification.incomeAmount >= filterBySizeMin)
-      .filter((org) => org.irsClassification.incomeAmount <= filterBySizeMax);
+  // let orgList = allOrganizations;
 
-    if (filterByState) {
-      newList = newList.filter(
-        (org) => org.mailingAddress.stateOrProvince == filterByState
-      );
-    }
-
-    if (filterByCategory > 0) {
-      newList = newList.filter(
-        (org) => org.category.categoryID == filterByCategory
-      );
-    }
-
-    if (filterByName != "") {
-      newList = newList.filter((org) =>
-        org.charityName?.toLowerCase().startsWith(filterByName.toLowerCase())
-      );
-    }
-
-    newList = [
-      ...newList.sort((current, next) => {
-        const currentVal = getPropertyValue(current, sortBy);
-        const nextVal = getPropertyValue(next, sortBy);
-        const a = sortOrder == "asc" ? currentVal : nextVal;
-        const b = sortOrder == "asc" ? nextVal : currentVal;
-        return typeof currentVal == "string" ? a.localeCompare(b) : a - b;
-      }),
-    ];
-
-    setTotalPages(Math.ceil(newList.length / pageSize));
-
-    let skip = pageNumber * pageSize;
-
-    if (skip > newList.length) {
-      skip = 0;
-      setPageNumber(0);
-    }
-
-    newList = newList.slice(skip, skip + pageSize);
-
-    setFilteredList(newList);
-  }, [
-    sortOrder,
-    sortBy,
-    pageNumber,
-    pageSize,
-    filterByRating,
-    filterBySizeMin,
-    filterBySizeMax,
-    filterByState,
-    filterByCategory,
-    filterByName,
+  let orgList = useChainMemo(allOrganizations, (orgList) => [
+    [
+      [filterByRating],
+      () =>
+        orgList.filter((org) => org.currentRating?.rating >= filterByRating),
+    ],
+    [
+      [filterByCategory],
+      () =>
+        filterByCategory
+          ? orgList.filter((org) => org.category.categoryID == filterByCategory)
+          : orgList,
+    ],
+    [
+      [filterBySizeMin],
+      () =>
+        orgList.filter(
+          (org) => org.irsClassification.incomeAmount >= filterBySizeMin
+        ),
+    ],
+    [
+      [filterBySizeMax],
+      () =>
+        orgList.filter(
+          (org) => org.irsClassification.incomeAmount <= filterBySizeMax
+        ),
+    ],
+    [
+      [filterByState],
+      () =>
+        filterByState !== ""
+          ? orgList.filter(
+              (org) => org.mailingAddress.stateOrProvince == filterByState
+            )
+          : orgList,
+    ],
+    [
+      [filterByName],
+      () =>
+        filterByName != ""
+          ? orgList.filter((org) =>
+              org.charityName
+                ?.toLowerCase()
+                .startsWith(filterByName.toLowerCase())
+            )
+          : orgList,
+    ],
+    [
+      [sortBy, sortOrder],
+      () =>
+        orgList.sort((current, next) => {
+          const currentVal = getPropertyValue(current, sortBy);
+          const nextVal = getPropertyValue(next, sortBy);
+          const a = sortOrder == "asc" ? currentVal : nextVal;
+          const b = sortOrder == "asc" ? nextVal : currentVal;
+          return typeof currentVal == "string" ? a.localeCompare(b) : a - b;
+        }),
+    ],
   ]);
+
+  const totalPages = Math.ceil(orgList.length / pageSize);
+
+  let skip = pageNumber * pageSize;
+
+  if (skip > orgList.length) {
+    skip = 0;
+    setPageNumber(0);
+  }
+
+  orgList = orgList.slice(skip, skip + pageSize);
 
   return (
     <>
@@ -237,9 +245,7 @@ export default function Charities() {
               </AccordionSummary>
               <AccordionDetails>
                 <Select
-                  label-id="rating-label"
                   label="Rating"
-                  id="rating"
                   value={filterByRating}
                   className={clsx(classes.filter)}
                   onChange={(e) => setFilterByRating(Number(e.target.value))}
@@ -252,42 +258,68 @@ export default function Charities() {
                 </Select>
               </AccordionDetails>
             </Accordion>
+            <Accordion className={classes.blueBg} defaultExpanded={true}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>Filter by category</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Select
+                  name="category"
+                  onChange={(e) => setFilterByCategory(Number(e.target.value))}
+                  className={classes.filter}
+                  value={filterByCategory}
+                >
+                  <MenuItem value="0">Select a category</MenuItem>
+                  <MenuItem value="1">Animals</MenuItem>
+                  <MenuItem value="2">Arts, Culture, Humanities</MenuItem>
+                  <MenuItem value="3">Education</MenuItem>
+                  <MenuItem value="4">Environment</MenuItem>
+                  <MenuItem value="5">Health</MenuItem>
+                  <MenuItem value="6">Human Services</MenuItem>
+                  <MenuItem value="7">International</MenuItem>
+                  <MenuItem value="8">Human and Civil Rights</MenuItem>
+                  <MenuItem value="9">Religion</MenuItem>
+                  <MenuItem value="10">Community Development</MenuItem>
+                  <MenuItem value="11">Research and Public Policy</MenuItem>
+                </Select>
+              </AccordionDetails>
+            </Accordion>
           </Grid>
         </ThemeProvider>
         <Grid item xs={9} className={classes.results}>
-            {filteredList?.map((org: Organization) => (
-              <div key={org.orgID} className={styles.item}>
-                <div className={styles.itemHeading}>
-                  <TpLink href={`/charity/${org.orgID}`}>
-                    <h3>{org.charityName}</h3>
-                  </TpLink>
-                  <p>{org.tagLine}</p>
-                  <p>
-                    <i>{`${org.cause.causeName}`}</i>
-                  </p>
-                  <span>
-                    <FontAwesomeIcon icon={faMapMarkerAlt} />
-                    {` ${org.mailingAddress.city}, ${org.mailingAddress.stateOrProvince}`}
-                  </span>
-                </div>
-                <div className={styles.itemScore}>
-                  <StarRating rating={org.currentRating.rating} />
-                  <p>Score: {org.currentRating.score} out of 100</p>
-                  <p>
-                    Size: $
-                    {org.irsClassification.incomeAmount
-                      ?.toString()
-                      .replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? 0}
-                  </p>
-                </div>
-                <div className={styles.itemScore}>
-                  <Button className={styles.button}>GIVE</Button>
-                </div>
-                <div className={styles.category}>
-                  <img src={org.category.image} width={50} height={50} />
-                </div>
+          {orgList?.map((org: Organization) => (
+            <div key={org.orgID} className={styles.item}>
+              <div className={styles.itemHeading}>
+                <TpLink href={`/charity/${org.orgID}`}>
+                  <h3>{org.charityName}</h3>
+                </TpLink>
+                <p>{org.tagLine}</p>
+                <p>
+                  <i>{`${org.cause.causeName}`}</i>
+                </p>
+                <span>
+                  <FontAwesomeIcon icon={faMapMarkerAlt} />
+                  {` ${org.mailingAddress.city}, ${org.mailingAddress.stateOrProvince}`}
+                </span>
               </div>
-            ))}
+              <div className={styles.itemScore}>
+                <StarRating rating={org.currentRating.rating} />
+                <p>Score: {org.currentRating.score} out of 100</p>
+                <p>
+                  Size: $
+                  {org.irsClassification.incomeAmount
+                    ?.toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? 0}
+                </p>
+              </div>
+              <div className={styles.itemScore}>
+                <Button className={styles.button}>GIVE</Button>
+              </div>
+              <div className={styles.category}>
+                <img src={org.category.image} width={50} height={50} />
+              </div>
+            </div>
+          ))}
         </Grid>
       </Grid>
     </>
