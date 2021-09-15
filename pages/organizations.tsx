@@ -112,7 +112,6 @@ export default function Charities() {
           placeholder="Search charities..."
           onChange={(e) => setFilterByName(e.target.value)}
         />
-
         <div className={styles.controlSort}>
           <label htmlFor="sortBy">Sort By: </label>
           <select name="sortBy" onChange={(e) => setSortBy(e.target.value)}>
@@ -177,134 +176,136 @@ export default function Charities() {
       </div>
       <div className={styles.container}>
         <div className={styles.filters}>
-          <div className={styles.filter}>
-            <label htmlFor="rating">Rating: </label>
-            <select
-              name="rating"
-              onChange={(e) =>
-                setFilterByRating(Number.parseInt(e.target.value))
-              }
-            >
-              <option value="0">0+</option>
-              <option value="1">1+</option>
-              <option value="2">2+</option>
-              <option value="3">3+</option>
-              <option value="4">4+</option>
-            </select>
-          </div>
-          <div className={styles.filter}>
-            <span>Filter by size: </span>
-            <div>
-              <label htmlFor="sizeMin">Min: </label>
+          <div className={styles.sticky}>
+            <div className={styles.filter}>
+              <label htmlFor="rating">Rating: </label>
               <select
-                name="sizeMin"
+                name="rating"
                 onChange={(e) =>
-                  setFilterBySizeMin(Number.parseInt(e.target.value))
+                  setFilterByRating(Number.parseInt(e.target.value))
                 }
               >
-                <option value="0">No min</option>
-                <option value="3500000">$3,500,000+</option>
-                <option value="13500000">$13,500,000+</option>
-                <option value="50000000">$50,000,000+</option>
+                <option value="0">0+</option>
+                <option value="1">1+</option>
+                <option value="2">2+</option>
+                <option value="3">3+</option>
+                <option value="4">4+</option>
               </select>
             </div>
-            <div>
-              <label htmlFor="sizeMax">Max: </label>
+            <div className={styles.filter}>
+              <span>Filter by size: </span>
+              <div>
+                <label htmlFor="sizeMin">Min: </label>
+                <select
+                  name="sizeMin"
+                  onChange={(e) =>
+                    setFilterBySizeMin(Number.parseInt(e.target.value))
+                  }
+                >
+                  <option value="0">No min</option>
+                  <option value="3500000">$3,500,000+</option>
+                  <option value="13500000">$13,500,000+</option>
+                  <option value="50000000">$50,000,000+</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor="sizeMax">Max: </label>
+                <select
+                  name="sizeMax"
+                  defaultValue="10000000000000000"
+                  onChange={(e) =>
+                    setFilterBySizeMax(Number.parseInt(e.target.value))
+                  }
+                >
+                  <option value="3500000">$3,500,000+</option>
+                  <option value="13500000">$13,500,000+</option>
+                  <option value="50000000">$50,000,000+</option>
+                  <option value="10000000000000000">No max</option>
+                </select>
+              </div>
+            </div>
+            <div className={styles.filter}>
+              <label htmlFor="state">State: </label>
               <select
-                name="sizeMax"
-                defaultValue="10000000000000000"
+                name="state"
+                onChange={(e) => setFilterByState(e.target.value)}
+              >
+                <option value="">Select a state</option>
+                <option value="AL">Alabama</option>
+                <option value="AK">Alaska</option>
+                <option value="AZ">Arizona</option>
+                <option value="AR">Arkansas</option>
+                <option value="CA">California</option>
+                <option value="CO">Colorado</option>
+                <option value="CT">Connecticut</option>
+                <option value="DE">Delaware</option>
+                <option value="DC">District Of Columbia</option>
+                <option value="FL">Florida</option>
+                <option value="GA">Georgia</option>
+                <option value="HI">Hawaii</option>
+                <option value="ID">Idaho</option>
+                <option value="IL">Illinois</option>
+                <option value="IN">Indiana</option>
+                <option value="IA">Iowa</option>
+                <option value="KS">Kansas</option>
+                <option value="KY">Kentucky</option>
+                <option value="LA">Louisiana</option>
+                <option value="ME">Maine</option>
+                <option value="MD">Maryland</option>
+                <option value="MA">Massachusetts</option>
+                <option value="MI">Michigan</option>
+                <option value="MN">Minnesota</option>
+                <option value="MS">Mississippi</option>
+                <option value="MO">Missouri</option>
+                <option value="MT">Montana</option>
+                <option value="NE">Nebraska</option>
+                <option value="NV">Nevada</option>
+                <option value="NH">New Hampshire</option>
+                <option value="NJ">New Jersey</option>
+                <option value="NM">New Mexico</option>
+                <option value="NY">New York</option>
+                <option value="NC">North Carolina</option>
+                <option value="ND">North Dakota</option>
+                <option value="OH">Ohio</option>
+                <option value="OK">Oklahoma</option>
+                <option value="OR">Oregon</option>
+                <option value="PA">Pennsylvania</option>
+                <option value="RI">Rhode Island</option>
+                <option value="SC">South Carolina</option>
+                <option value="SD">South Dakota</option>
+                <option value="TN">Tennessee</option>
+                <option value="TX">Texas</option>
+                <option value="UT">Utah</option>
+                <option value="VT">Vermont</option>
+                <option value="VA">Virginia</option>
+                <option value="WA">Washington</option>
+                <option value="WV">West Virginia</option>
+                <option value="WI">Wisconsin</option>
+                <option value="WY">Wyoming</option>
+              </select>
+            </div>
+            <div className={styles.filter}>
+              <label htmlFor="category">Category:</label>
+              <select
+                name="category"
                 onChange={(e) =>
-                  setFilterBySizeMax(Number.parseInt(e.target.value))
+                  setFilterByCategory(Number.parseInt(e.target.value))
                 }
               >
-                <option value="3500000">$3,500,000+</option>
-                <option value="13500000">$13,500,000+</option>
-                <option value="50000000">$50,000,000+</option>
-                <option value="10000000000000000">No max</option>
+                <option value="0">Select a category</option>
+                <option value="1">Animals</option>
+                <option value="2">Arts, Culture, Humanities</option>
+                <option value="3">Education</option>
+                <option value="4">Environment</option>
+                <option value="5">Health</option>
+                <option value="6">Human Services</option>
+                <option value="7">International</option>
+                <option value="8">Human and Civil Rights</option>
+                <option value="9">Religion</option>
+                <option value="10">Community Development</option>
+                <option value="11">Research and Public Policy</option>
               </select>
             </div>
-          </div>
-          <div className={styles.filter}>
-            <label htmlFor="state">State: </label>
-            <select
-              name="state"
-              onChange={(e) => setFilterByState(e.target.value)}
-            >
-              <option value="">Select a state</option>
-              <option value="AL">Alabama</option>
-              <option value="AK">Alaska</option>
-              <option value="AZ">Arizona</option>
-              <option value="AR">Arkansas</option>
-              <option value="CA">California</option>
-              <option value="CO">Colorado</option>
-              <option value="CT">Connecticut</option>
-              <option value="DE">Delaware</option>
-              <option value="DC">District Of Columbia</option>
-              <option value="FL">Florida</option>
-              <option value="GA">Georgia</option>
-              <option value="HI">Hawaii</option>
-              <option value="ID">Idaho</option>
-              <option value="IL">Illinois</option>
-              <option value="IN">Indiana</option>
-              <option value="IA">Iowa</option>
-              <option value="KS">Kansas</option>
-              <option value="KY">Kentucky</option>
-              <option value="LA">Louisiana</option>
-              <option value="ME">Maine</option>
-              <option value="MD">Maryland</option>
-              <option value="MA">Massachusetts</option>
-              <option value="MI">Michigan</option>
-              <option value="MN">Minnesota</option>
-              <option value="MS">Mississippi</option>
-              <option value="MO">Missouri</option>
-              <option value="MT">Montana</option>
-              <option value="NE">Nebraska</option>
-              <option value="NV">Nevada</option>
-              <option value="NH">New Hampshire</option>
-              <option value="NJ">New Jersey</option>
-              <option value="NM">New Mexico</option>
-              <option value="NY">New York</option>
-              <option value="NC">North Carolina</option>
-              <option value="ND">North Dakota</option>
-              <option value="OH">Ohio</option>
-              <option value="OK">Oklahoma</option>
-              <option value="OR">Oregon</option>
-              <option value="PA">Pennsylvania</option>
-              <option value="RI">Rhode Island</option>
-              <option value="SC">South Carolina</option>
-              <option value="SD">South Dakota</option>
-              <option value="TN">Tennessee</option>
-              <option value="TX">Texas</option>
-              <option value="UT">Utah</option>
-              <option value="VT">Vermont</option>
-              <option value="VA">Virginia</option>
-              <option value="WA">Washington</option>
-              <option value="WV">West Virginia</option>
-              <option value="WI">Wisconsin</option>
-              <option value="WY">Wyoming</option>
-            </select>
-          </div>
-          <div className={styles.filter}>
-            <label htmlFor="category">Category:</label>
-            <select
-              name="category"
-              onChange={(e) =>
-                setFilterByCategory(Number.parseInt(e.target.value))
-              }
-            >
-              <option value="0">Select a category</option>
-              <option value="1">Animals</option>
-              <option value="2">Arts, Culture, Humanities</option>
-              <option value="3">Education</option>
-              <option value="4">Environment</option>
-              <option value="5">Health</option>
-              <option value="6">Human Services</option>
-              <option value="7">International</option>
-              <option value="8">Human and Civil Rights</option>
-              <option value="9">Religion</option>
-              <option value="10">Community Development</option>
-              <option value="11">Research and Public Policy</option>
-            </select>
           </div>
         </div>
         <div className={styles.results}>
