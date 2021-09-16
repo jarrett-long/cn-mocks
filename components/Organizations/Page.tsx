@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/core/styles";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { blueBg } from "../../theme";
 import Accordion from "../Accordion/Accordion";
 import Link from "../Link/Link";
@@ -48,13 +48,14 @@ export default function OrganizationsPage() {
     sortOrder
   );
 
-  let totalPages = Math.ceil(orgList.length / pageSize);
-  let skip = pageNumber * pageSize;
-  if (skip > orgList.length) {
-    skip = 0;
+  useEffect(() => {
     setPageNumber(0);
-  }
-  orgList = orgList.slice(skip, skip + pageSize);
+  }, [orgList]);
+
+  let totalPages = Math.ceil(orgList.length / pageSize);
+  let start = pageNumber * pageSize;
+  let stop = start + pageSize;
+  orgList = orgList.slice(start, stop);
 
   return (
     <>

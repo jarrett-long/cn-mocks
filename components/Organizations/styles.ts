@@ -6,9 +6,8 @@ export const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     display: "flex",
     alignItems: "center",
-    borderBottom: "1px solid white",
     position: "sticky",
-    top: 65,
+    top: 66,
     zIndex: 100,
   },
   blueBg: {
@@ -24,11 +23,12 @@ export const useStyles = makeStyles((theme) => ({
   },
   filterColumn: {
     backgroundColor: theme.palette.primary.main,
-    paddingTop: theme.spacing(1),
   },
   filterContainer: {
+    borderTop: "1px solid white",
+    paddingTop: theme.spacing(1),
     position: "sticky",
-    top: 155,
+    top: 146,
     maxHeight: '75vh',
     overflowY: 'scroll',
     '&::-webkit-scrollbar': {

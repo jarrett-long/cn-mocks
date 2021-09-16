@@ -39,7 +39,7 @@ export default function Pagination({ pageIndex, setPageNumber, totalPages }) {
         <Button disabled={pageIndex < 1} onClick={() => setPageNumber(0)}>
           Start
         </Button>
-        <Button disabled={pageIndex < 1} onClick={() => setPageNumber(pageIndex - 1)}>
+        <Button disabled={pageIndex < 5} onClick={() => setPageNumber(pageIndex - 5)}>
           <ChevronLeftIcon />
         </Button>
       </Grid>
@@ -53,7 +53,7 @@ export default function Pagination({ pageIndex, setPageNumber, totalPages }) {
         </Grid>
       ))}
       <Grid item>
-        <Button disabled={pageNumber == totalPages} onClick={() => setPageNumber(pageIndex + 1)}>
+        <Button disabled={pageNumber > totalPages - 5} onClick={() => setPageNumber(pageIndex + 5)}>
           <ChevronRightIcon />
         </Button>
         <Button disabled={pageNumber == totalPages} onClick={() => setPageNumber(totalPages - 1)}>
