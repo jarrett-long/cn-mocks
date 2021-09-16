@@ -7,7 +7,7 @@ if (typeof Highcharts === 'object') {
     HighchartsExporting(Highcharts)
 }
 
-function MyContributions () {
+function Hero () {
   const options = {
     title: {
       text: 'My 2021 Contributions'
@@ -56,4 +56,4 @@ function MyContributions () {
   )
 }
 
-export default MyContributions
+export default Hero

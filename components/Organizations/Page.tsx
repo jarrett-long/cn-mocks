@@ -99,7 +99,7 @@ export default function OrganizationsPage() {
             </FormControl>
             <Grid item className={classes.pagination}>
               <Pagination 
-                pageNumber={pageNumber} 
+                pageIndex={pageNumber} 
                 setPageNumber={setPageNumber}
                 totalPages={totalPages}
               />
