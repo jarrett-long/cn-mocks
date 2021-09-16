@@ -1,14 +1,14 @@
 import "@fontsource/roboto";
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from '@mui/material/CssBaseline';
 import Head from "next/head";
 import Layout from "../components/Layout/Layout";
-import { ThemeProvider } from '@material-ui/core/styles';
-import theme from '../theme';
+import { ThemeProvider } from '@mui/material/styles';
+import { defaultTheme } from '../theme';
 
 function App({ Component, pageProps }) {
   const getLayout = Component.getLayout || ((page) => <Layout>{page}</Layout>);
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={defaultTheme}>
       <Head>
         <meta
           name="viewport"

@@ -1,22 +1,23 @@
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Box, Button,
+  Box,
+  Button,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
   TextField,
-  Typography
-} from "@material-ui/core";
-import { ThemeProvider } from "@material-ui/core/styles";
+  Typography,
+} from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import { blueBg } from "../../theme";
+import { blueBgTheme } from "../../theme";
 import Accordion from "../Accordion/Accordion";
 import Link from "../Link/Link";
-import Pagination from "../Pagination/Pagination";
+import Pagination, { DarkPagination } from "../Pagination/Pagination";
 import StarRating from "../StarRating/StarRating";
 import { allOrganizations } from "./data";
 import { useFilters } from "./logic";
@@ -24,7 +25,6 @@ import { useStyles } from "./styles";
 import { Organization } from "./types";
 
 export default function OrganizationsPage() {
-  const classes = useStyles();
   const [sortOrder, setSortOrder] = useState("asc");
   const [sortBy, setSortBy] = useState("charityName");
   const [filterByRating, setFilterByRating] = useState(0);
@@ -59,78 +59,104 @@ export default function OrganizationsPage() {
 
   return (
     <>
-      <ThemeProvider theme={blueBg}>
-        <Box boxShadow={3} className={classes.controlRow}>
-          <Grid container color="primary" alignItems="center">
-            <Grid item xs={3} className={classes.control}>
-              <TextField
-                fullWidth
-                size="small"
-                variant="filled"
-                label="Search charities..."
-                onChange={(e) => setFilterByName(String(e.target.value))}
-              />
-            </Grid>
-            <FormControl className={classes.control}>
-              <InputLabel id="sort-by-label">Sort by</InputLabel>
-              <Select
-                label="Sort by"
-                labelId="sort-by-label"
-                id="sort-by"
-                value={sortBy}
-                onChange={(e) => setSortBy(String(e.target.value))}
-              >
-                <MenuItem value="charityName">Name</MenuItem>
-                <MenuItem value="currentRating.score">Score</MenuItem>
-                <MenuItem value="irsClassification.incomeAmount">Size</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl className={classes.control}>
-              <InputLabel id="sort-order-label">Sort by</InputLabel>
-              <Select
-                label="Sort order"
-                labelId="sort-order-label"
-                id="sort-order"
-                value={sortOrder}
-                onChange={(e) => setSortOrder(String(e.target.value))}
-              >
-                <MenuItem value="asc">Ascending</MenuItem>
-                <MenuItem value="desc">Descending</MenuItem>
-              </Select>
-            </FormControl>
-            <Grid item className={classes.pagination}>
-              <Pagination 
-                pageIndex={pageNumber} 
-                setPageNumber={setPageNumber}
-                totalPages={totalPages}
-              />
-            </Grid>
-            <FormControl className={classes.control}>
-              <InputLabel id="page-size-label">Size</InputLabel>
-              <Select
-                id="page-size"
-                label-id="page-size-label"
-                value={pageSize}
-                onChange={(e) => setPageSize(Number(e.target.value))}
-              >
-                <MenuItem value="10">10</MenuItem>
-                <MenuItem value="25">25</MenuItem>
-                <MenuItem value="50">50</MenuItem>
-                <MenuItem value="100">100</MenuItem>
-              </Select>
-            </FormControl>
+      <ThemeProvider theme={blueBgTheme}>
+        <Grid
+          container
+          sx={{
+            padding: (theme) => theme.spacing(1),
+            alignItems: "center",
+            position: "sticky",
+            backgroundColor: "background.default",
+            top: 66,
+            zIndex: 100,
+            boxShadow: 3,
+          }}
+        >
+          <Grid item xs={3} sx={{ p: 1 }}>
+            <TextField
+              fullWidth
+              size="small"
+              variant="filled"
+              label="Search charities..."
+              onChange={(e) => setFilterByName(String(e.target.value))}
+            />
           </Grid>
-        </Box>
+          <Grid item sx={{ p: 1 }}>
+            <InputLabel id="sort-by-label">Sort by</InputLabel>
+            <Select
+              color="primary"
+              label="Sort by"
+              labelId="sort-by-label"
+              id="sort-by"
+              value={sortBy}
+              variant="standard"
+              onChange={(e) => setSortBy(String(e.target.value))}
+            >
+              <MenuItem value="charityName">Name</MenuItem>
+              <MenuItem value="currentRating.score">Score</MenuItem>
+              <MenuItem value="irsClassification.incomeAmount">Size</MenuItem>
+            </Select>
+          </Grid>
+          <Grid item sx={{ p: 1 }}>
+            <InputLabel id="sort-order-label">Sort by</InputLabel>
+            <Select
+              label="Sort order"
+              labelId="sort-order-label"
+              id="sort-order"
+              variant="standard"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(String(e.target.value))}
+            >
+              <MenuItem value="asc">Ascending</MenuItem>
+              <MenuItem value="desc">Descending</MenuItem>
+            </Select>
+          </Grid>
+          <Grid item sx={{ mr: "auto", ml: "auto" }}>
+            <Pagination
+              pageIndex={pageNumber}
+              setPageNumber={setPageNumber}
+              totalPages={totalPages}
+            />
+          </Grid>
+          <Grid item sx={{ p: 1 }}>
+            <InputLabel id="page-size-label">Size</InputLabel>
+            <Select
+              id="page-size"
+              label-id="page-size-label"
+              variant="standard"
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+            >
+              <MenuItem value="10">10</MenuItem>
+              <MenuItem value="25">25</MenuItem>
+              <MenuItem value="50">50</MenuItem>
+              <MenuItem value="100">100</MenuItem>
+            </Select>
+          </Grid>
+        </Grid>
       </ThemeProvider>
       <Grid container>
-        <ThemeProvider theme={blueBg}>
-          <Grid item xs={3} className={classes.filterColumn}>
-            <Box className={classes.filterContainer}>
+        <ThemeProvider theme={blueBgTheme}>
+          <Grid item xs={3} sx={{backgroundColor: "background.default"}}>
+            <Box
+              sx={{
+                borderTop: 1,
+                borderColor: "common.white",
+                pt: 1,
+                position: "sticky",
+                top: 146,
+                maxHeight: "78.5vh",
+                overflowY: "scroll",
+                "&::-webkit-scrollbar": {
+                  display: "none",
+                },
+              }}
+            >
               <Accordion defaultExpanded={true} label="Filter by rating">
                 <Select
                   label="Rating"
                   value={filterByRating}
-                  className={clsx(classes.filter)}
+                  sx={{ width: 1 }}
                   onChange={(e) => setFilterByRating(Number(e.target.value))}
                 >
                   <MenuItem value="0">0+</MenuItem>
@@ -144,7 +170,7 @@ export default function OrganizationsPage() {
                 <Select
                   name="category"
                   onChange={(e) => setFilterByCategory(Number(e.target.value))}
-                  className={classes.filter}
+                  sx={{ width: 1 }}
                   value={filterByCategory}
                 >
                   <MenuItem value="0">Select a category</MenuItem>
@@ -166,7 +192,7 @@ export default function OrganizationsPage() {
                   select
                   id="filter-by-size-min"
                   label="Min"
-                  className={classes.filterHalf}
+                  sx={{ width: 1 / 2 }}
                   value={filterBySizeMin}
                   onChange={(e) => setFilterBySizeMin(Number(e.target.value))}
                 >
@@ -179,7 +205,7 @@ export default function OrganizationsPage() {
                   select
                   id="filter-by-size-max"
                   label="Max"
-                  className={classes.filterHalf}
+                  sx={{ width: 1 / 2 }}
                   value={filterBySizeMax}
                   onChange={(e) => setFilterBySizeMax(Number(e.target.value))}
                 >
@@ -194,7 +220,7 @@ export default function OrganizationsPage() {
                   select
                   id="filter-by-state"
                   label="State"
-                  className={classes.filter}
+                  sx={{ width: 1 }}
                   value={filterByState}
                   onChange={(e) => setFilterByState(String(e.target.value))}
                 >
@@ -255,14 +281,30 @@ export default function OrganizationsPage() {
             </Box>
           </Grid>
         </ThemeProvider>
-        <Grid item xs={9} className={classes.results}>
+        <Grid
+          item
+          xs={9}
+          sx={{
+            pr: 2,
+            pl: 2,
+            "& p": {
+              mb: 1,
+            },
+          }}
+        >
           {orgList?.map((org: Organization) => (
             <Grid
               container
               key={org.orgID}
               justifyContent="space-between"
               align-items="center"
-              className={classes.result}
+              sx={{
+                position: "relative",
+                borderBottom: 1,
+                borderColor: "grey",
+                pt: 2,
+                pb: 2,
+              }}
             >
               <Grid
                 item
@@ -300,9 +342,15 @@ export default function OrganizationsPage() {
                   GIVE
                 </Button>
               </Grid>
-              <div className={classes.categoryBadge}>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                }}
+              >
                 <img src={org.category.image} width={50} height={50} />
-              </div>
+              </Box>
             </Grid>
           ))}
         </Grid>
