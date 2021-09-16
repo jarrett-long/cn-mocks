@@ -1,19 +1,41 @@
-import React from "react";
+import { Grid, Box } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import Image from "next/image";
-import TpLink from "../TpLink/TpLink";
-import styles from "./header.module.css";
+import React from "react";
+import Link from "../Link/Link";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    position: "sticky",
+    top: 0,
+    zIndex: 100,
+    backgroundColor: theme.palette.common.white,
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2)
+  },
+  links: {
+    "& a": {
+      marginLeft: theme.spacing(2),
+    },
+  },
+}));
 
 function Header() {
+  const classes = useStyles();
   return (
-    <header className={styles.header}>
-      <TpLink className="link" href="/">
-        <Image src="/logo.png" width={200} height={60} />
-      </TpLink>
-      <div className={styles.linksWrapper}>
-        <TpLink href="/organizations">Organizations</TpLink>
-        <TpLink href="/profile">My Profile</TpLink>
-      </div>
-    </header>
+    <Box component="header" boxShadow={4} className={classes.root}>
+      <Grid container justifyContent="space-between" alignItems="center">
+        <Grid item>
+          <Link href="/">
+            <Image src="/logo.png" width={200} height={60} />
+          </Link>
+        </Grid>
+        <Grid item className={classes.links}>
+          <Link href="/organizations">Organizations</Link>
+          <Link href="/profile">My Profile</Link>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 

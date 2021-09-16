@@ -3,6 +3,8 @@ import { faStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarO } from '@fortawesome/free-regular-svg-icons';
 import styles from './star-rating.module.css';
 
+
+
 export default function StarRating (props) {
   const stars = [];
   const getIcon = (rating, index) => {

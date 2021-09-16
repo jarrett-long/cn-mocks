@@ -1,15 +1,13 @@
-import Header from '../Header/Header'
-import Footer from '../Footer/Footer'
-import styles from './layout.module.css'
+import { Container } from "@material-ui/core";
+import Footer from "../Footer/Footer";
+import Header from "../Header/Header";
 
 export default function Layout({ children }) {
   return (
-    <div className={styles.container}>
+    <Container>
       <Header />
-      <main className={styles.main}>
-        {children}
-      </main>
+      <main>{children}</main>
       <Footer />
-    </div>
-  )
+    </Container>
+  );
 }

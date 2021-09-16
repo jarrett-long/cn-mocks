@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { charities } from '../api/charities';
 
 export default function Charity() {
-  const router = useRouter();
-  const { id } = router.query;
+  // const router = useRouter();
+  // const { id } = router.query;
   const [charity, setCharity] = useState();
   useEffect(() => {
     setCharity(charities.find(c => c.id == id));
