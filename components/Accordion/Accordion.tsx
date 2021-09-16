@@ -5,7 +5,7 @@ import MuiAccordionSummary from "@material-ui/core/AccordionSummary";
 import MuiAccordionDetails from "@material-ui/core/AccordionDetails";
 import { Typography } from "@material-ui/core";
 
-export default function CnAccordion({ label, children, defaultExpanded }) {
+export default function Accordion({ label, children, defaultExpanded }) {
   const Accordion = withStyles({
     root: {
       backgroundColor: '#336699',
@@ -15,7 +15,8 @@ export default function CnAccordion({ label, children, defaultExpanded }) {
       borderLeft: 0, 
       borderRadius: 0,
       '&:last-child': {
-        borderRadius: 0
+        borderRadius: 0,
+        borderBottom: '1px solid rgba(0, 0, 0, .125)'
       },
       // boxShadow: "none",
       "&:before": {
