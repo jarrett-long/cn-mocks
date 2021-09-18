@@ -1,40 +1,42 @@
-import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Box,
-  Button,
-  FormControl,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
-  Typography,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Button,
+  Paper,
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
-import clsx from "clsx";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { blueBgTheme } from "../../theme";
 import Accordion from "../Accordion/Accordion";
-import Link from "../Link/Link";
-import Pagination, { DarkPagination } from "../Pagination/Pagination";
-import StarRating from "../StarRating/StarRating";
+import Pagination from "../Pagination/Pagination";
 import { allOrganizations } from "./data";
-import { useFilters } from "./logic";
-import { useStyles } from "./styles";
+import { FilterByCategory } from "./FilterByCategory";
+import { FilterByRating } from "./FilterByRating";
+import { FilterBySize } from "./FilterBySize";
+import { PageSize } from "./PageSize";
+import { Result } from "./Result";
+import { SelectState } from "./SelectState";
+import { SortBy } from "./SortBy";
+import { SortOrder } from "./SortOrder";
 import { Organization } from "./types";
+import { useFilters } from "./useFilters";
 
 export default function OrganizationsPage() {
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [sortBy, setSortBy] = useState("charityName");
-  const [filterByRating, setFilterByRating] = useState(0);
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortBy, setSortBy] = useState("currentRating.score");
+  const [filterByRating, setFilterByRating] = useState(4);
   const [filterBySizeMin, setFilterBySizeMin] = useState(0);
   const [filterBySizeMax, setFilterBySizeMax] = useState(10000000000000000);
   const [filterByState, setFilterByState] = useState("");
   const [filterByCategory, setFilterByCategory] = useState(0);
   const [filterByName, setFilterByName] = useState("");
   const [pageSize, setPageSize] = useState(10);
-  const [pageNumber, setPageNumber] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [openMobileDialog, setOpenMobileDialog] = useState(false);
 
   let orgList = useFilters(
     allOrganizations,
@@ -49,11 +51,11 @@ export default function OrganizationsPage() {
   );
 
   useEffect(() => {
-    setPageNumber(0);
+    setPageIndex(0);
   }, [orgList]);
 
   let totalPages = Math.ceil(orgList.length / pageSize);
-  let start = pageNumber * pageSize;
+  let start = pageIndex * pageSize;
   let stop = start + pageSize;
   orgList = orgList.slice(start, stop);
 
@@ -61,6 +63,7 @@ export default function OrganizationsPage() {
     <>
       <ThemeProvider theme={blueBgTheme}>
         <Grid
+          id="controls-row"
           container
           sx={{
             padding: (theme) => theme.spacing(1),
@@ -69,7 +72,11 @@ export default function OrganizationsPage() {
             backgroundColor: "background.default",
             top: 66,
             zIndex: 100,
-            boxShadow: 3,
+            boxShadow: 5,
+            display: {
+              xs: "none",
+              lg: "flex",
+            },
           }}
         >
           <Grid item xs={3} sx={{ p: 1 }}>
@@ -82,69 +89,41 @@ export default function OrganizationsPage() {
             />
           </Grid>
           <Grid item sx={{ p: 1 }}>
-            <InputLabel id="sort-by-label">Sort by</InputLabel>
-            <Select
-              color="primary"
-              label="Sort by"
-              labelId="sort-by-label"
-              id="sort-by"
-              value={sortBy}
-              variant="standard"
-              onChange={(e) => setSortBy(String(e.target.value))}
-            >
-              <MenuItem value="charityName">Name</MenuItem>
-              <MenuItem value="currentRating.score">Score</MenuItem>
-              <MenuItem value="irsClassification.incomeAmount">Size</MenuItem>
-            </Select>
+            <SortBy {...{ sortBy, setSortBy }} />
           </Grid>
           <Grid item sx={{ p: 1 }}>
-            <InputLabel id="sort-order-label">Sort by</InputLabel>
-            <Select
-              label="Sort order"
-              labelId="sort-order-label"
-              id="sort-order"
-              variant="standard"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(String(e.target.value))}
-            >
-              <MenuItem value="asc">Ascending</MenuItem>
-              <MenuItem value="desc">Descending</MenuItem>
-            </Select>
+            <SortOrder {...{ sortOrder, setSortOrder }} />
           </Grid>
           <Grid item sx={{ mr: "auto", ml: "auto" }}>
-            <Pagination
-              pageIndex={pageNumber}
-              setPageNumber={setPageNumber}
-              totalPages={totalPages}
-            />
+            <Pagination {...{ pageIndex, setPageIndex, totalPages }} />
           </Grid>
           <Grid item sx={{ p: 1 }}>
-            <InputLabel id="page-size-label">Size</InputLabel>
-            <Select
-              id="page-size"
-              label-id="page-size-label"
-              variant="standard"
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-            >
-              <MenuItem value="10">10</MenuItem>
-              <MenuItem value="25">25</MenuItem>
-              <MenuItem value="50">50</MenuItem>
-              <MenuItem value="100">100</MenuItem>
-            </Select>
+            <PageSize {...{ pageSize, setPageSize }} />
           </Grid>
         </Grid>
       </ThemeProvider>
       <Grid container>
         <ThemeProvider theme={blueBgTheme}>
-          <Grid item xs={3} sx={{backgroundColor: "background.default"}}>
+          <Grid
+            id="filters-column"
+            item
+            xs={3}
+            sx={{
+              mb: 2,
+              backgroundColor: "background.default",
+              display: {
+                xs: "none",
+                lg: "flex",
+              },
+            }}
+          >
             <Box
               sx={{
                 borderTop: 1,
                 borderColor: "common.white",
-                pt: 1,
                 position: "sticky",
-                top: 146,
+                top: 153,
+                width: 1,
                 maxHeight: "78.5vh",
                 overflowY: "scroll",
                 "&::-webkit-scrollbar": {
@@ -153,139 +132,122 @@ export default function OrganizationsPage() {
               }}
             >
               <Accordion defaultExpanded={true} label="Filter by rating">
-                <Select
-                  label="Rating"
-                  value={filterByRating}
-                  sx={{ width: 1 }}
-                  onChange={(e) => setFilterByRating(Number(e.target.value))}
-                >
-                  <MenuItem value="0">0+</MenuItem>
-                  <MenuItem value="1">1+</MenuItem>
-                  <MenuItem value="2">2+</MenuItem>
-                  <MenuItem value="3">3+</MenuItem>
-                  <MenuItem value="4">4+</MenuItem>
-                </Select>
+                <FilterByRating {...{ filterByRating, setFilterByRating }} />
               </Accordion>
               <Accordion defaultExpanded={true} label="Filter by category">
-                <Select
-                  name="category"
-                  onChange={(e) => setFilterByCategory(Number(e.target.value))}
-                  sx={{ width: 1 }}
-                  value={filterByCategory}
-                >
-                  <MenuItem value="0">Select a category</MenuItem>
-                  <MenuItem value="1">Animals</MenuItem>
-                  <MenuItem value="2">Arts, Culture, Humanities</MenuItem>
-                  <MenuItem value="3">Education</MenuItem>
-                  <MenuItem value="4">Environment</MenuItem>
-                  <MenuItem value="5">Health</MenuItem>
-                  <MenuItem value="6">Human Services</MenuItem>
-                  <MenuItem value="7">International</MenuItem>
-                  <MenuItem value="8">Human and Civil Rights</MenuItem>
-                  <MenuItem value="9">Religion</MenuItem>
-                  <MenuItem value="10">Community Development</MenuItem>
-                  <MenuItem value="11">Research and Public Policy</MenuItem>
-                </Select>
+                <FilterByCategory
+                  {...{ filterByCategory, setFilterByCategory }}
+                />
               </Accordion>
-              <Accordion label="Filter by size" defaultExpanded={true}>
-                <TextField
-                  select
-                  id="filter-by-size-min"
-                  label="Min"
-                  sx={{ width: 1 / 2 }}
-                  value={filterBySizeMin}
-                  onChange={(e) => setFilterBySizeMin(Number(e.target.value))}
-                >
-                  <MenuItem value="0">No min</MenuItem>
-                  <MenuItem value="3500000">$3,500,000+</MenuItem>
-                  <MenuItem value="13500000">$13,500,000+</MenuItem>
-                  <MenuItem value="50000000">$50,000,000+</MenuItem>
-                </TextField>
-                <TextField
-                  select
-                  id="filter-by-size-max"
-                  label="Max"
-                  sx={{ width: 1 / 2 }}
-                  value={filterBySizeMax}
-                  onChange={(e) => setFilterBySizeMax(Number(e.target.value))}
-                >
-                  <MenuItem value="3500000">$3,500,000+</MenuItem>
-                  <MenuItem value="13500000">$13,500,000+</MenuItem>
-                  <MenuItem value="50000000">$50,000,000+</MenuItem>
-                  <MenuItem value="10000000000000000">No max</MenuItem>
-                </TextField>
+              <Accordion label="Filter by size" defaultExpanded={false}>
+                <FilterBySize
+                  {...{
+                    filterBySizeMin,
+                    filterBySizeMax,
+                    setFilterBySizeMin,
+                    setFilterBySizeMax,
+                  }}
+                />
               </Accordion>
-              <Accordion label="Filter by state" defaultExpanded={true}>
-                <TextField
-                  select
-                  id="filter-by-state"
-                  label="State"
-                  sx={{ width: 1 }}
-                  value={filterByState}
-                  onChange={(e) => setFilterByState(String(e.target.value))}
-                >
-                  <MenuItem value="">Select a state</MenuItem>
-                  <MenuItem value="AL">Alabama</MenuItem>
-                  <MenuItem value="AK">Alaska</MenuItem>
-                  <MenuItem value="AZ">Arizona</MenuItem>
-                  <MenuItem value="AR">Arkansas</MenuItem>
-                  <MenuItem value="CA">California</MenuItem>
-                  <MenuItem value="CO">Colorado</MenuItem>
-                  <MenuItem value="CT">Connecticut</MenuItem>
-                  <MenuItem value="DE">Delaware</MenuItem>
-                  <MenuItem value="DC">District Of Columbia</MenuItem>
-                  <MenuItem value="FL">Florida</MenuItem>
-                  <MenuItem value="GA">Georgia</MenuItem>
-                  <MenuItem value="HI">Hawaii</MenuItem>
-                  <MenuItem value="ID">Idaho</MenuItem>
-                  <MenuItem value="IL">Illinois</MenuItem>
-                  <MenuItem value="IN">Indiana</MenuItem>
-                  <MenuItem value="IA">Iowa</MenuItem>
-                  <MenuItem value="KS">Kansas</MenuItem>
-                  <MenuItem value="KY">Kentucky</MenuItem>
-                  <MenuItem value="LA">Louisiana</MenuItem>
-                  <MenuItem value="ME">Maine</MenuItem>
-                  <MenuItem value="MD">Maryland</MenuItem>
-                  <MenuItem value="MA">Massachusetts</MenuItem>
-                  <MenuItem value="MI">Michigan</MenuItem>
-                  <MenuItem value="MN">Minnesota</MenuItem>
-                  <MenuItem value="MS">Mississippi</MenuItem>
-                  <MenuItem value="MO">Missouri</MenuItem>
-                  <MenuItem value="MT">Montana</MenuItem>
-                  <MenuItem value="NE">Nebraska</MenuItem>
-                  <MenuItem value="NV">Nevada</MenuItem>
-                  <MenuItem value="NH">New Hampshire</MenuItem>
-                  <MenuItem value="NJ">New Jersey</MenuItem>
-                  <MenuItem value="NM">New Mexico</MenuItem>
-                  <MenuItem value="NY">New York</MenuItem>
-                  <MenuItem value="NC">North Carolina</MenuItem>
-                  <MenuItem value="ND">North Dakota</MenuItem>
-                  <MenuItem value="OH">Ohio</MenuItem>
-                  <MenuItem value="OK">Oklahoma</MenuItem>
-                  <MenuItem value="OR">Oregon</MenuItem>
-                  <MenuItem value="PA">Pennsylvania</MenuItem>
-                  <MenuItem value="RI">Rhode Island</MenuItem>
-                  <MenuItem value="SC">South Carolina</MenuItem>
-                  <MenuItem value="SD">South Dakota</MenuItem>
-                  <MenuItem value="TN">Tennessee</MenuItem>
-                  <MenuItem value="TX">Texas</MenuItem>
-                  <MenuItem value="UT">Utah</MenuItem>
-                  <MenuItem value="VT">Vermont</MenuItem>
-                  <MenuItem value="VA">Virginia</MenuItem>
-                  <MenuItem value="WA">Washington</MenuItem>
-                  <MenuItem value="WV">West Virginia</MenuItem>
-                  <MenuItem value="WI">Wisconsin</MenuItem>
-                  <MenuItem value="WY">Wyoming</MenuItem>
-                </TextField>
+              <Accordion label="Filter by state" defaultExpanded={false}>
+                <SelectState {...{ filterByState, setFilterByState }} />
               </Accordion>
             </Box>
           </Grid>
+          <Grid
+            item
+            id="filter-sort-mobile"
+            sx={{
+              display: {
+                xs: "flex",
+                lg: "none",
+              },
+              width: 1,
+              p: 1,
+              boxShadow: 3,
+              backgroundColor: (theme) => theme.palette.background.default,
+              position: "sticky",
+              top: 66,
+              zIndex: 100,
+              justifyContent: "space-between",
+            }}
+          >
+            <Box
+              sx={{
+                p: 1,
+                width: {
+                  xs: 1 / 2,
+                  md: 3 / 4,
+                },
+              }}
+            >
+              <TextField
+                fullWidth
+                size="small"
+                variant="filled"
+                label="Search charities..."
+                onChange={(e) => setFilterByName(String(e.target.value))}
+              />
+            </Box>
+            <Box sx={{ p: 1 }}>
+              <Button
+                sx={{ height: 1 }}
+                size="small"
+                color="info"
+                variant="outlined"
+                onClick={() => setOpenMobileDialog(true)}
+              >
+                Filter and Sort
+              </Button>
+            </Box>
+            <Dialog
+              open={openMobileDialog}
+              onClose={() => setOpenMobileDialog(false)}
+            >
+              <DialogTitle>Filter and Sort</DialogTitle>
+              <DialogContent>
+                <Box sx={{ p: 1 }}>
+                  <FilterByRating {...{ filterByRating, setFilterByRating }} />
+                </Box>
+                <Box sx={{ p: 1 }}>
+                  <FilterByCategory
+                    {...{ filterByCategory, setFilterByCategory }}
+                  />
+                </Box>
+                <Box sx={{ p: 1 }}>
+                  <FilterBySize
+                    {...{
+                      filterBySizeMin,
+                      setFilterBySizeMin,
+                      filterBySizeMax,
+                      setFilterBySizeMax,
+                    }}
+                  />
+                </Box>
+                <Box sx={{ p: 1 }}>
+                  <SelectState {...{ filterByState, setFilterByState }} />
+                </Box>
+                <Box sx={{ p: 1, width: 1 }}>
+                  <Button
+                    onClick={() => setOpenMobileDialog(false)}
+                    sx={{ width: 1 }}
+                    variant="contained"
+                    color="info"
+                  >
+                    Done
+                  </Button>
+                </Box>
+              </DialogContent>
+            </Dialog>
+          </Grid>
         </ThemeProvider>
         <Grid
+          id="results"
           item
-          xs={9}
+          xs={12}
+          lg={9}
           sx={{
-            pr: 2,
+            pr: 0,
             pl: 2,
             "& p": {
               mb: 1,
@@ -293,65 +255,7 @@ export default function OrganizationsPage() {
           }}
         >
           {orgList?.map((org: Organization) => (
-            <Grid
-              container
-              key={org.orgID}
-              justifyContent="space-between"
-              align-items="center"
-              sx={{
-                position: "relative",
-                borderBottom: 1,
-                borderColor: "grey",
-                pt: 2,
-                pb: 2,
-              }}
-            >
-              <Grid
-                item
-                xs={7}
-                container
-                direction="column"
-                justifyContent="space-between"
-              >
-                <Link href={`/charity/${org.orgID}`}>
-                  <Typography variant="h6">{org.charityName}</Typography>
-                </Link>
-                <Typography variant="body2">{org.tagLine}</Typography>
-                <Typography variant="body2">
-                  <i>{`${org.cause.causeName}`}</i>
-                </Typography>
-                <Typography variant="body2">
-                  <FontAwesomeIcon icon={faMapMarkerAlt} />
-                  {` ${org.mailingAddress.city}, ${org.mailingAddress.stateOrProvince}`}
-                </Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <StarRating rating={org.currentRating.rating} />
-                <Typography variant="body2">
-                  Score: {org.currentRating.score} out of 100
-                </Typography>
-                <Typography variant="body2">
-                  Size: $
-                  {org.irsClassification.incomeAmount
-                    ?.toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? 0}
-                </Typography>
-              </Grid>
-              <Grid item xs={2}>
-                <Button variant="contained" color="secondary">
-                  GIVE
-                </Button>
-              </Grid>
-              <Box
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                }}
-              >
-                <img src={org.category.image} width={50} height={50} />
-              </Box>
-            </Grid>
+            <Result key={org.orgID} org={org} />
           ))}
         </Grid>
       </Grid>

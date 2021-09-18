@@ -2,7 +2,8 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import { Button, Grid } from "@mui/material";
 
-export default function Pagination({ pageIndex, setPageNumber, totalPages }) {
+export default function Pagination({ pageIndex, setPageIndex, totalPages }) {
+  const random = Math.random();
   let buttons = [];
   const pageNumber = pageIndex + 1;
   if (totalPages < 5) {
@@ -29,28 +30,28 @@ export default function Pagination({ pageIndex, setPageNumber, totalPages }) {
   return (
     <Grid container>
       <Grid item>
-        <Button color="info" disabled={pageIndex < 1} onClick={() => setPageNumber(0)}>
+        <Button color="info" disabled={pageIndex < 1} onClick={() => setPageIndex(0)}>
           Start
         </Button>
-        <Button color="info" disabled={pageIndex < 5} onClick={() => setPageNumber(pageIndex - 5)}>
+        <Button color="info" disabled={pageIndex < 5} onClick={() => setPageIndex(pageIndex - 5)}>
           <ChevronLeftIcon />
         </Button>
       </Grid>
       {buttons.map((button) => (
-        <Grid item key={button}>
+        <Grid item key={button + random}>
           <Button 
             color="info"
             variant={button == pageNumber ? "contained" : "text"}
-            onClick={() => setPageNumber(button - 1)}>
+            onClick={() => setPageIndex(button - 1)}>
             {button}
           </Button>
         </Grid>
       ))}
       <Grid item>
-        <Button color="info" disabled={pageNumber > totalPages - 5} onClick={() => setPageNumber(pageIndex + 5)}>
+        <Button color="info" disabled={pageNumber > totalPages - 5} onClick={() => setPageIndex(pageIndex + 5)}>
           <ChevronRightIcon />
         </Button>
-        <Button color="info" disabled={pageNumber == totalPages} onClick={() => setPageNumber(totalPages - 1)}>
+        <Button color="info" disabled={pageNumber == totalPages} onClick={() => setPageIndex(totalPages - 1)}>
           {totalPages}
         </Button>
       </Grid>

@@ -4,8 +4,12 @@ import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { Typography } from "@mui/material";
+import { useState } from "react";
 
 export default function Accordion({ label, children, defaultExpanded }) {
+
+  const [expanded, setExpanded] = useState(defaultExpanded)
+
   const Accordion = withStyles({
     root: {
       // backgroundColor: '#336699',
@@ -56,7 +60,8 @@ export default function Accordion({ label, children, defaultExpanded }) {
 
   return (
     <Accordion
-      defaultExpanded={defaultExpanded}
+      defaultExpanded={expanded}
+      onChange={() => setExpanded(!expanded)}
       variant="elevation"
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>

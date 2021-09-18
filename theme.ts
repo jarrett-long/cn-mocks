@@ -30,6 +30,9 @@ export const defaultTheme = createTheme({
       default: colors.white,
     }
   },
+  shape: {
+    borderRadius: 1
+  },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -51,9 +54,15 @@ export const blueBgTheme = createTheme({
       paper: colors.blue,
       default: colors.blue
     },
+    text: {
+      primary: colors.white,
+    },
     info: {
       main: colors.white,
       contrastText: colors.blue
     },
-  }
+  },
+  shape: {
+    borderRadius: 1
+  },
 });
