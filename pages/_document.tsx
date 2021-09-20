@@ -11,6 +11,8 @@ export default class MyDocument extends Document {
         <Head>
           {/* PWA primary color */}
           <meta name="theme-color" content={defaultTheme.palette.primary.main} />
+          <link href="https://fonts.googleapis.com/css2?family=Playfair%20Display&display=swap" rel="stylesheet"></link>
+          <link href="https://fonts.googleapis.com/css2?family=Roboto%20Slab&display=swap" rel="stylesheet"></link>
         </Head>
         <body>
           <Main />

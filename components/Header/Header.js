@@ -1,11 +1,12 @@
-import { Grid, Box, Typography, Avatar } from "@mui/material";
+import { Grid, Box, Typography, Avatar, Container } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { ThemeProvider } from "@mui/system";
 import Image from "next/image";
 import React from "react";
 import Link from "../Link/Link";
 import { blueBgTheme } from "../../theme";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import SearchIcon from '@mui/icons-material/Search';
 
 function Header() {
   return (
@@ -22,40 +23,45 @@ function Header() {
           boxShadow: 3,
         }}
       >
-        <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Link href="/">
-              <Image src="/logo.png" width={200} height={60} />
-            </Link>
+        <Container>
+          <Grid container justifyContent="space-between" alignItems="center">
+            <Grid item>
+              <Link href="/">
+                <Image src="/logo.png" width={200} height={60} />
+              </Link>
+            </Grid>
+            <Grid item>
+              <Typography
+                color="primary.contrastText"
+                sx={{ display: { xs: "none", md: "block" } }}
+              >
+                This is a re-design of{" "}
+                <a href="https://www.charitynavigator.org">
+                  charitynavigator.org
+                </a>{" "}
+                that I'm doing for fun.
+              </Typography>
+            </Grid>
+            <Grid
+              item
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                height: 1,
+                "& a": {
+                  ml: 2,
+                },
+              }}
+            >
+              <Link color="primary.contrastText" href="/organizations">
+                <SearchIcon />
+              </Link>
+              <Link color="primary.contrastText" href="/profile">
+                <AccountCircleIcon color="#fff" />
+              </Link>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Typography color="primary.contrastText">
-              This is a re-design of{" "}
-              <a href="https://www.charitynavigator.org">
-                charitynavigator.org
-              </a>{" "}
-              that I'm doing for fun.
-            </Typography>
-          </Grid>
-          <Grid
-            item
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              height: 1,
-              "& a": {
-                ml: 2,
-              },
-            }}
-          >
-            <Link color="primary.contrastText" href="/organizations">
-              Organizations
-            </Link>
-            <Link color="primary.contrastText" href="/profile">
-              <AccountCircleIcon sx={{height:50, width: 50}} color="#fff" />
-            </Link>
-          </Grid>
-        </Grid>
+        </Container>
       </Box>
     </ThemeProvider>
   );

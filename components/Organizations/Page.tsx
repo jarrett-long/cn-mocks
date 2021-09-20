@@ -22,7 +22,7 @@ import { Result } from "./Result";
 import { SelectState } from "./SelectState";
 import { SortBy } from "./SortBy";
 import { SortOrder } from "./SortOrder";
-import { Organization } from "./types";
+import { Organization } from "./OrganizationProps";
 import { useFilters } from "./useFilters";
 
 export default function OrganizationsPage() {
@@ -248,7 +248,7 @@ export default function OrganizationsPage() {
           lg={9}
           sx={{
             pr: 0,
-            pl: 2,
+            pl: {xs: 0, lg: 2},
             "& p": {
               mb: 1,
             },

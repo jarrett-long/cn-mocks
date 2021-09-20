@@ -1,4 +1,4 @@
-import Hero from "../components/ProfileHero/Hero";
+import Hero from "../components/Profile/Hero";
 
 export default function MyProfile() {
   return (
